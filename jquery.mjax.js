@@ -37,7 +37,6 @@
     $.fn.mjax = function (options) {
         var opts = $.extend({}, $.fn.mjax.DEFAULTS, options);
         var instance = $.fn.mjaxInstance;
-
         //Select2 doesn't work when embedded in a bootstrap modal
         //搜索框不能输入和聚焦
         //http://stackoverflow.com/questions/18487056/select2-doesnt-work-when-embedded-in-a-bootstrap-modal
@@ -85,9 +84,20 @@
         //如果有表单，则绑定ajax提交表单yiiActiveForm
         modalBody.find('form').each(function () {
             var _form = $(this);
-            var eventName = 'submit';
-            if (_form.data(opts.detectData)) {
-                eventName = opts.detectEvent;
+            var eventName = 'submit.mjax';
+            //如果submit已经绑定了其他的事件，如果判断已经存在的依据
+            var point = opts.point
+                ? opts.point
+                : _form.data('point');
+            if (!point) {
+                point = opts.pointAttr 
+                ? _form.data(opts.pointAttr)
+                : _form.data('point-attr')
+            }
+            if (point) {
+                //如果submit已经绑定事件，切入点事件
+                var pointEvent = _form.data('point-event')
+                if(pointEvent) eventName = pointEvent;
             }
             _form.on(eventName, function (event) {
                 //通知yii.activeForm 不要提交表单，由本对象通过ajax的方式提交表单
@@ -171,8 +181,9 @@
 
     $.fn.mjax.DEFAULTS = {
         refresh: false //关闭模态框的时候是否刷新当前页面
-        //detectData:'yiiActiveForm', //如果submit已经绑定了其他的事件，如果判断已经存在的依据
-        //detectEvent: 'beforeSubmit', //如果submit已经绑定事件，切入点事件
+        //point:true,
+        //pointAttr: 'yiiActiveForm',
+        //pointEvent: 'beforeSubmit'
     };
 
     $(document).ready(function () {

@@ -1,0 +1,28 @@
+{
+  "name": "jquery.mjax",
+  "description": "Bootstrap Modal for any anchor mark by ajax",
+  "main": "jquery.mjax.js",
+  "authors": [
+    "dungang"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "bootstrap",
+    "modal",
+    "ajax",
+    "mjax"
+  ],
+  "homepage": "https://github.com/dungang/jquery.mjax",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jquery": "^1.12.4",
+    "bootstrap": "^3.3.7",
+    "jquery-form": "^4.1.0"
+  }
+}
