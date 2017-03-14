@@ -1,6 +1,6 @@
 {
   "name": "jquery.mjax",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bootstrap Modal for any anchor mark by ajax",
   "main": "src/jquery.mjax.js",
   "scripts": {
