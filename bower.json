@@ -22,7 +22,9 @@
   ],
   "devDependencies": {
     "jquery": "^1.12.4",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^3.3.7"
+  },
+  "dependencies": {
     "jquery-form": "^4.1.0"
   }
 }
