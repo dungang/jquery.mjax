@@ -2,7 +2,7 @@
   "name": "jquery.mjax",
   "description": "Bootstrap Modal for any anchor mark by ajax",
   "main": "src/jquery.mjax.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     "dungang"
   ],
