@@ -23,21 +23,21 @@ action="form-result.html" method="post">
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
 <script>
-        alert("It's a point form!");
-        $('#point-form').attr('anyattr','ddd').on('submit',function(event){
-          alert('1) reveive point-form submit event');
-          console.log('1) receive point-form submit event:');
-          console.log(event);
-          var newEvent = $.Event('beforeSubmit')
-          alert('2) trigger beforeSubmit event');
-          console.log('2) trigger beforeSubmit event:');
-          console.log(newEvent);
-          $(this).trigger(newEvent);
-          alert('3) triggered beforeSubmit event');
-          console.log('3) triggered beforeSubmit event:');
-          console.log (newEvent.result)
-          console.log(newEvent);
-          alert('4) end');
-          return newEvent.result;
-        });
+    alert("It's a point form!");
+    $('#point-form').attr('anyattr','ddd').on('submit',function(event){
+      alert('1) reveive point-form submit event');
+      console.log('1) receive point-form submit event:');
+      console.log(event);
+      var newEvent = $.Event('beforeSubmit')
+      alert('2) trigger beforeSubmit event');
+      console.log('2) trigger beforeSubmit event:');
+      console.log(newEvent);
+      $(this).trigger(newEvent);
+      alert('3) triggered beforeSubmit event');
+      console.log('3) triggered beforeSubmit event:');
+      console.log (newEvent.result)
+      console.log(newEvent);
+      alert('4) end');
+      return newEvent.result;
+    });
 </script>
