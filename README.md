@@ -128,3 +128,7 @@ $('a.mjax').mjax({
 });
 
 ```
+
+> php packager
+
+[yii2-mjax](https://github.com/dungang/yii2-mjax)
