@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>MJax  Template</title>
+    <title>Mjax！  Template</title>
 
     <!-- Bootstrap -->
     <link href="../bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
@@ -30,17 +30,24 @@
         </div>
       </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="../bower_components/jquery-form/dist/jquery.form.min.js"></script>
     <script src="../src/jquery.mjax.js"></script>
     <script>
       //if you want a secial point form and don't want to add tag's attr , then add this code 
-      // $('.mjax').mjax({
-      //     point:true,
-      //     pointEvent: 'beforeSubmit'
-      // });
+      $(document).ready(function(){
+        $('.mjax').mjax({
+            pointForm:function(){ 
+              //tell mjax,this is a point form 
+              //do anything ,return true is a point form , false is not
+              // this -> form
+              return typeof(this.attr("anyattr"))!="undefined";
+            },
+            pointEvent: 'beforeSubmit'
+        });
+      });
     </script>
   </body>
 </html>

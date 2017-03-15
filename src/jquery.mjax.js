@@ -3,6 +3,10 @@
  */
 +function ($) {
 
+    var opts = {};
+        //页面是否发送变化
+    var _changed = false;
+
     if (!$.fn.mjaxInstance) {
         var modal = $('<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mjax"></div>');
         var modalDoc = $('<div class="modal-dialog" role="document"></div>');
@@ -29,13 +33,64 @@
             modalFooter: modalFooter
         };
 
+        modalBody.on('updateModalBody', function () {
+            //如果有表单，则绑定ajax提交表单yiiActiveForm
+            modalBody.find('form').each(function () {
+                
+                var _form = $(this);
+                var eventName = 'submit';
+                var isPoint = false;
+                //如果submit已经绑定了其他的事件，如果判断已经存在的依据
+                if (opts.pointForm) {
+                    if (typeof opts.pointForm === 'function') {
+                        isPoint = opts.pointForm.call(_form);
+                    } else {
+                        isPoint = opts.pointForm;
+                    }
+                } else {
+                    isPoint = _form.data('point-form');
+                }
+                if (isPoint) {
+                    //如果submit已经绑定事件，切入点事件
+                    var pointEvent = opts.pointEvent 
+                    ? opts.pointEvent
+                    : _form.data('point-event');
+                    if(pointEvent) eventName = pointEvent;
+                }
 
+                _form.on(eventName, function (event) {
+                    //通知yii.activeForm 不要提交表单，由本对象通过ajax的方式提交表单
+                    event.result = false;
+                    console.log('mjax receive even:'+eventName);
+                    $(this).ajaxSubmit({
+                        complete:function (xhr) {
+                            //X-Mjax-Redirect 309
+                            if(xhr.status == 309) {
+                                var redirect = xhr.getResponseHeader('X-Mjax-Redirect');
+                                $.get(redirect,function (response) {
+                                    //将表单的结果页面覆盖模态框Body
+                                    extractContent(response,modalBody);
+                                    _changed = true;
+                                })
+                            }
+
+                        },
+                        success: function (response) {
+                            //将表单的结果页面覆盖模态框Body
+                            extractContent(response,modalBody);
+                            _changed = true;
+                        }
+                    });
+                    return false;
+                });
+            });
+
+        });
     }
-    //页面是否发送变化
-    var _changed = false;
+
 
     $.fn.mjax = function (options) {
-        var opts = $.extend({}, $.fn.mjax.DEFAULTS, options);
+        opts = $.extend({}, $.fn.mjax.DEFAULTS, options);
         var instance = $.fn.mjaxInstance;
         //Select2 doesn't work when embedded in a bootstrap modal
         //搜索框不能输入和聚焦
@@ -64,7 +119,7 @@
                         //如果关闭模态框，则刷新当前页面
                         if (_changed && opts.refresh) window.location.reload();
                     });
-                    extractContent(opts,response,instance.modalBody);
+                    extractContent(response,instance.modalBody);
                     var modalSize = arch.data('mjax-size');
                     instance.modalDoc.removeClass('modal-lg').removeClass('modal-sm');
                     if ( modalSize== 'sm') {
@@ -80,53 +135,9 @@
         });
     };
 
-    function updateModalBody(opts) {
-        //如果有表单，则绑定ajax提交表单yiiActiveForm
-        modalBody.find('form').each(function () {
-            var _form = $(this);
-            var eventName = 'submit.mjax';
-            //如果submit已经绑定了其他的事件，如果判断已经存在的依据
-            var point = opts.point
-                ? opts.point
-                : _form.data('point');
-            if (!point) {
-                point = opts.pointAttr 
-                ? _form.data(opts.pointAttr)
-                : _form.data('point-attr')
-            }
-            if (point) {
-                //如果submit已经绑定事件，切入点事件
-                var pointEvent = _form.data('point-event')
-                if(pointEvent) eventName = pointEvent;
-            }
-            _form.on(eventName, function (event) {
-                //通知yii.activeForm 不要提交表单，由本对象通过ajax的方式提交表单
-                event.result = false;
-                $(this).ajaxSubmit({
-                    complete:function (xhr) {
-                        //X-Mjax-Redirect 309
-                        if(xhr.status == 309) {
-                            var redirect = xhr.getResponseHeader('X-Mjax-Redirect');
-                            $.get(redirect,function (response) {
-                                //将表单的结果页面覆盖模态框Body
-                                extractContent(opts,response,modalBody);
-                                _changed = true;
-                            })
-                        }
+    
 
-                    },
-                    success: function (response) {
-                        //将表单的结果页面覆盖模态框Body
-                        extractContent(opts,response,modalBody);
-                        _changed = true;
-                    }
-                });
-                return false;
-            });
-        });
-    };
-
-    function extractContent(opts,response,context) {
+    function extractContent(response,context) {
         var content = $($.parseHTML(response,document,true));
         var scripts = findAll(content,'script').remove();
         var links = findAll(content,'link').remove();
@@ -135,7 +146,7 @@
             executeTags(links,context,'link','href',true),
             executeTags(scripts,context,'script','src',true)
         ).done(function () {
-            updateModalBody(opts);
+            context.trigger('updateModalBody');
         });
 
     }
@@ -181,9 +192,8 @@
 
     $.fn.mjax.DEFAULTS = {
         refresh: false //关闭模态框的时候是否刷新当前页面
-        //point:true,
-        //pointAttr: 'yiiActiveForm',
-        //pointEvent: 'beforeSubmit'
+        //pointForm:true|function(form){return true},
+        //pointFormEvent: 'beforeSubmit'
     };
 
     $(document).ready(function () {

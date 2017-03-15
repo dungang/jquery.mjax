@@ -30,7 +30,7 @@ yes! add a class `mjax` to <a> too!
 
 what's a point form ?
 
-like this
+like this, a registed submit event form
 
 ```
 <form id="point-form" action="form-result.html" method="post">
@@ -57,25 +57,35 @@ like this
 <script>
     $(document).ready(function(){
         alert("It's a point form!");
-        $('#point-form').on('submit',function(event){
-            var _form = $(this);
-            //here a even point
-            var event = $.Event('beforSubmit');
-            _form.trigger(event);
-            if (event.result === false) {
-                //do something
-                return false;
-            } else {
-                //do something
-                return true;
-            }
+        $('#point-form')
+            .attr('anyattr','ddd')
+            // here register a submit event, so we call point form
+            .on('submit',function(event){
+
+            alert('1) reveive point-form submit event');
+            console.log('1) receive point-form submit event:');
+            console.log(event);
+
+            // if has a point ,so we can do something to interrupt
+            var newEvent = $.Event('beforeSubmit')
+            alert('2) trigger beforeSubmit event');
+
+            console.log('2) trigger beforeSubmit event:');
+            console.log(newEvent);
+            $(this).trigger(newEvent);
+            alert('3) triggered beforeSubmit event');
+            console.log('3) triggered beforeSubmit event:');
+            console.log (newEvent.result)
+            console.log(newEvent);
+            alert('4) end');
+            return newEvent.result;
         });
     });
 </script>
 ```
 how we do ?
 
- -  add `data-point` and `data-point-event` to the form
+ -  add `data-point-form` and `data-point-event` to the form
 
 like this
 
@@ -83,21 +93,7 @@ like this
 <form 
 id="point-form" 
 
-data-point="true" 
-data-point-event="beforSubmit" 
-
-action="form-result.html" method="post">
-
-```
- - add `data-point-attr` and `data-point-event` to the form
-
-for Yii2 
-
-```
-<form 
-id="point-form" 
-
-data-point-attr="yiiActiveForm" 
+data-point-form="true" 
 data-point-event="beforSubmit" 
 
 action="form-result.html" method="post">
@@ -106,19 +102,29 @@ action="form-result.html" method="post">
 
 - pass init options
 
+all form is a point form
+
 ```
-$('#a').mjax({
-    point:true,
+$('a.mjax').mjax({
+    pointFrom:true,
     pointEvent:'beforSubmit'
 });
 
 ```
+
 or 
 
+if a form has a special attribute, or anything
+
 ```
-$('#a').mjax({
-    pointAttr:'yiiActiveForm',
-    pointEvent:'beforSubmit'
+$('a.mjax').mjax({
+    pointForm:function(){ 
+        //tell mjax,this is a point form 
+        //do anything ,return true is a point form , false is not
+        // this -> form
+        return typeof(this.attr("anyattr"))!="undefined";
+    },
+    pointEvent: 'beforeSubmit'
 });
 
 ```
