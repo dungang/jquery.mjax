@@ -21,6 +21,9 @@
         modalContent.append(modalHeader).append(modalBody);
         //modalContent.append(modalFooter);
         modalHeader.append(modalHeaderTitle);
+        modalBody.css({
+            padding:0
+        });
         $('body').append(modal);
 
         $.fn.mjaxInstance = {
