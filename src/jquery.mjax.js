@@ -7,6 +7,12 @@
         //页面是否发送变化
     var _changed = false;
 
+    var version = '1.0.1';
+
+    var headers = {
+        'X-Mjax-Request':version
+    };
+
     if (!$.fn.mjaxInstance) {
         var modal = $('<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mjax"></div>');
         var modalDoc = $('<div class="modal-dialog" role="document"></div>');
@@ -66,11 +72,12 @@
                     event.result = false;
                     console.log('mjax receive even:'+eventName);
                     $(this).ajaxSubmit({
+                        headers:headers,
                         complete:function (xhr) {
                             //X-Mjax-Redirect 309
                             if(xhr.status == 309) {
                                 var redirect = xhr.getResponseHeader('X-Mjax-Redirect');
-                                $.get(redirect,function (response) {
+                                mjaxGet(redirect,function (response) {
                                     //将表单的结果页面覆盖模态框Body
                                     extractContent(response,modalBody);
                                     _changed = true;
@@ -117,7 +124,7 @@
                 var arch = $(this);
                 e.preventDefault();
                 instance.modalHeaderTitle.html(_this.html());
-                $.get(_this.attr('href'), function (response) {
+                mjaxGet(_this.attr('href'), function (response) {
                     instance.modal.on('hidden.bs.modal', function () {
                         //如果关闭模态框，则刷新当前页面
                         if (_changed && opts.refresh) window.location.reload();
@@ -138,7 +145,15 @@
         });
     };
 
-    
+    function mjaxGet(url,callback)
+    {
+        return $.ajax({
+            url:url,
+            type:'get',
+            success:callback,
+            headers:headers
+        });
+    }
 
     function extractContent(response,context) {
         var content = $($.parseHTML(response,document,true));
