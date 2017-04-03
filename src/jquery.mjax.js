@@ -28,7 +28,7 @@
         //modalContent.append(modalFooter);
         modalHeader.append(modalHeaderTitle);
         modalBody.css({
-            padding:0
+            padding:'1px 0'
         });
         $('body').append(modal);
 
@@ -109,16 +109,17 @@
         };
         return this.each(function () {
             var _this = $(this);
+            //关闭模态框的时候是否刷新当前页面
+            var _refresh = _this.data('mjax-refresh');
+            if (_refresh != 'undefined') {
+                opts.refresh = _refresh;
+            }
             if (_this.data('mjax-bind')) {
                 return;
             } else {
                 _this.data('mjax-bind',true);
             }
-            //关闭模态框的时候是否刷新当前页面
-            var _refresh = _this.data('mjax-refresh');
-            if (_refresh) {
-                opts.refresh = _refresh;
-            }
+
             _changed = false;
             _this.click(function (e) {
                 var arch = $(this);
