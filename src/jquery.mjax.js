@@ -4,7 +4,7 @@
 +function ($) {
 
     var opts = {};
-        //页面是否发送变化
+    //页面是否发送变化
     var _changed = false;
 
     var version = '1.0.1';
@@ -45,7 +45,7 @@
         modalBody.on('updateModalBody', function () {
             //如果有表单，则绑定ajax提交表单yiiActiveForm
             modalBody.find('form').each(function () {
-                
+
                 var _form = $(this);
                 var eventName = 'submit';
                 var isPoint = false;
@@ -61,9 +61,9 @@
                 }
                 if (isPoint) {
                     //如果submit已经绑定事件，切入点事件
-                    var pointEvent = opts.pointEvent 
-                    ? opts.pointEvent
-                    : _form.data('point-event');
+                    var pointEvent = opts.pointEvent
+                        ? opts.pointEvent
+                        : _form.data('point-event');
                     if(pointEvent) eventName = pointEvent;
                 }
 
@@ -123,7 +123,11 @@
             _this.click(function (e) {
                 var arch = $(this);
                 e.preventDefault();
-                instance.modalHeaderTitle.html(_this.html());
+                if(_this.attr('title')) {
+                    instance.modalHeaderTitle.html(_this.attr('title'));
+                } else {
+                    instance.modalHeaderTitle.html(_this.html());
+                }
                 mjaxGet(_this.attr('href'), function (response) {
                     instance.modal.on('hidden.bs.modal', function () {
                         //如果关闭模态框，则刷新当前页面
