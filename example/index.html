@@ -36,8 +36,20 @@
     <script src="../bower_components/jquery-form/dist/jquery.form.min.js"></script>
     <script src="../src/jquery.mjax.js"></script>
     <script>
+
       //if you want a secial point form and don't want to add tag's attr , then add this code 
       $(document).ready(function(){
+        // $.fn.mjax.DEFAULTS = {
+        //   refresh: false, //关闭模态框的时候是否刷新当前页面
+        //   pointForm: function(){ 
+        //       //tell mjax,this is a point form 
+        //       //do anything ,return true is a point form , false is not
+        //       // this -> form
+        //       return typeof(this.attr("anyattr"))!="undefined";
+        //   },
+        //   pointEvent: 'beforeSubmit'
+        // };
+        // $('.mjax').mjax();
         $('.mjax').mjax({
             pointForm:function(){ 
               //tell mjax,this is a point form 
