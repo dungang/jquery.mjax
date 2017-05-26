@@ -7,8 +7,6 @@
     //http://stackoverflow.com/questions/18487056/select2-doesnt-work-when-embedded-in-a-bootstrap-modal
     if ($.fn.modal) $.fn.modal.Constructor.prototype.enforceFocus = function () {
     };
-    //页面是否发送变化
-    var _changed = false;
 
     var version = '1.0.1';
 
@@ -17,6 +15,7 @@
     };
 
     function MjaxModel(opts) {
+        this.pageChanged = false;
         this.opts = opts;
         this.modal = $('<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mjax"></div>');
         this.modalDoc = $('<div class="modal-dialog" role="document"></div>');
@@ -25,8 +24,8 @@
         this.modalHeaderTitle = $('<h4 class="modal-title">Modal title</h4>');
         this.modalBody = $('<div class="modal-body"></div>');
         this.modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></div>');
-        
-       
+
+
         this.modal.append(this.modalDoc);
         this.modalDoc.append(this.modalContent);
         this.modalContent.append(this.modalHeader).append(this.modalBody);
@@ -73,6 +72,10 @@
                 //console.log('mjax receive even:'+eventName);
                 $(this).ajaxSubmit({
                     headers:headers,
+                    beforeSubmit:function(){
+                        console.log(_this);
+                        opts.beforeSubmit.call(_this);
+                    },
                     complete:function (xhr) {
                         //X-Mjax-Redirect 309
                         if(xhr.status == 309) {
@@ -80,15 +83,17 @@
                             _this.mjaxGet(redirect,function (response) {
                                 //将表单的结果页面覆盖模态框Body
                                 _this.extractContent(response);
-                                _changed = true;
+                                _this.pageChanged = true;
                             })
                         }
 
+                        opts.submitComplete.call(_this);
                     },
                     success: function (response) {
                         //将表单的结果页面覆盖模态框Body
                         _this.extractContent(response);
-                        _changed = true;
+                        _this.pageChanged = true;
+                        opts.submitSuccess.call(_this);
                     }
                 });
                 return false;
@@ -194,9 +199,9 @@
             }
 
             //console.log('click before1 ');
-            _changed = false;
+
             _this.click(function (e) {
-            //console.log('click after1 ');
+                //console.log('click after1 ');
                 var instance = new MjaxModel(opts);
                 var arch = $(this);
                 e.preventDefault();
@@ -208,10 +213,10 @@
                 instance.mjaxGet(_this.attr('href'), function (response) {
                     instance.modal.on('hidden.bs.modal', function () {
                         //如果关闭模态框，则刷新当前页面
-                        if (_changed && opts.refresh) window.location.reload();
+                        if (instance.pageChanged && opts.refresh) window.location.reload();
                         instance.destroy();
                     });
-                    
+
                     //console.log('extractcontet before1 ');
                     instance.extractContent(response);
                     //console.log('extractcontet after1 ');
@@ -233,12 +238,15 @@
 
 
     $.fn.mjax.DEFAULTS = {
-        refresh: false //关闭模态框的时候是否刷新当前页面
+        refresh: false,//关闭模态框的时候是否刷新当前页面
         //pointForm:true|function(form){return true},
-        //pointFormEvent: 'beforeSubmit'
+        //pointFormEvent: 'beforeSubmit',
+        beforeSubmit:$.noop,
+        submitComplete:$.noop,
+        submitSuccess:$.noop
     };
 
-    $(document).ready(function () {
-        $('.mjax').mjax();
-    });
+    // $(document).ready(function () {
+    //     $('.mjax').mjax();
+    // });
 }(jQuery);
