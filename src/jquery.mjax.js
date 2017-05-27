@@ -34,6 +34,15 @@
         this.modalBody.css({
             padding:'1px 0'
         });
+        var _this = this;
+        this.modal.on('hidden.bs.modal', function () {
+            //如果关闭模态框，则刷新当前页面
+            if (_this.pageChanged && opts.refresh) {
+                opts.close.call(_this);
+            }
+            _this.destroy();
+        });
+
     }
 
     MjaxModel.prototype.updateBody = function()
@@ -73,7 +82,7 @@
                 $(this).ajaxSubmit({
                     headers:headers,
                     beforeSubmit:function(){
-                        console.log(_this);
+                        //console.log(_this);
                         opts.beforeSubmit.call(_this);
                     },
                     complete:function (xhr) {
@@ -211,11 +220,6 @@
                     instance.modalHeaderTitle.html(_this.html());
                 }
                 instance.mjaxGet(_this.attr('href'), function (response) {
-                    instance.modal.on('hidden.bs.modal', function () {
-                        //如果关闭模态框，则刷新当前页面
-                        if (instance.pageChanged && opts.refresh) window.location.reload();
-                        instance.destroy();
-                    });
 
                     //console.log('extractcontet before1 ');
                     instance.extractContent(response);
@@ -243,7 +247,10 @@
         //pointFormEvent: 'beforeSubmit',
         beforeSubmit:$.noop,
         submitComplete:$.noop,
-        submitSuccess:$.noop
+        submitSuccess:$.noop,
+        close:function(){
+            window.location.reload();
+        }
     };
 
     // $(document).ready(function () {
