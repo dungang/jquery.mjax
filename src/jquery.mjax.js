@@ -37,7 +37,7 @@
         var _this = this;
         this.modal.on('hidden.bs.modal', function () {
             //如果关闭模态框，则刷新当前页面
-            if (_this.pageChanged && opts.refresh) {
+            if (_this.pageChanged && _this.opts.refresh) {
                 opts.close.call(_this);
             }
             _this.destroy();
@@ -189,7 +189,7 @@
         };
         next();
         return dtd;
-    }
+    };
 
     $.fn.mjax = function (options) {
         var opts = $.extend({}, $.fn.mjax.DEFAULTS, options);
@@ -198,7 +198,7 @@
             //console.log('start ');
             //关闭模态框的时候是否刷新当前页面
             var _refresh = _this.data('mjax-refresh');
-            if (_refresh != 'undefined') {
+            if (_refresh != undefined) {
                 opts.refresh = _refresh;
             }
             if (_this.data('mjax-bind')) {
