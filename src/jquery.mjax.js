@@ -49,14 +49,10 @@
     {
         this.modalBody.find('.mjax').mjax(this.opts);
         var _this = this;
-        // console.log('update before1 ');
-        // console.log(_this.opts);
-        //如果有表单，则绑定ajax提交表单yiiActiveForm
         this.modalBody.find('form').each(function () {
             var _form = $(this);
             _form.off('submit');
             _form.on('submit', function (event) {
-                //通知yii.activeForm 不要提交表单，由本对象通过ajax的方式提交表单
                 event.result = false;
                 $(this).ajaxSubmit({
                     headers:headers,
