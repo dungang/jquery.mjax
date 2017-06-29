@@ -100,7 +100,7 @@
             this.modalDoc.addClass('modal-lg');
         }
         this.modal.modal({
-            backdrop: false  //静态模态框，即单鼠标点击模态框的外围时，模态框不关闭。
+            backdrop: 'static'  //静态模态框，即单鼠标点击模态框的外围时，模态框不关闭。
         });
     };
 
@@ -196,15 +196,15 @@
                 opts.refresh = _refresh;
             }
             if (_this.data('mjax-bind')) {
-                return;
+                _this.off('click.mjax');
             } else {
                 _this.data('mjax-bind',true);
             }
-
-            _this.click(function (e) {
+            _this.on('click.mjax',function(e){
                 var arch = $(this);
                 var instance = new MjaxModel(arch,opts);
                 e.preventDefault();
+                opts.beforeOpen.call(instance);
                 if(_this.attr('title')) {
                     instance.modalHeaderTitle.html(_this.attr('title'));
                 } else {
@@ -212,6 +212,7 @@
                 }
                 instance.mjaxGet(_this.attr('href'), function (response) {
                     instance.extractContent(response);
+                    opts.beforeShow.call(instance);
                     instance.show();
                 });
             });
@@ -225,6 +226,8 @@
         beforeSubmit:$.noop,
         submitComplete:$.noop,
         submitSuccess:$.noop,
+        beforeOpen:$.noop,
+        beforeShow:$.noop,
         close:function(){
             window.location.reload();
         }
