@@ -49,28 +49,24 @@
     {
         this.modalBody.find('.mjax').mjax(this.opts);
         var _this = this;
-        this.modalBody.find('form').each(function () {
-            var _form = $(this);
-            _form.off('submit');
-            _form.on('submit', function (event) {
-                event.result = false;
-                $(this).ajaxSubmit({
-                    headers:headers,
-                    beforeSubmit:function(){
-                        _this.opts.beforeSubmit.call(_this);
-                    },
-                    complete:function (xhr) {
-                        _this.processRedirect(xhr,true,false);
-                        _this.opts.submitComplete.call(_this);
-                    },
-                    success: function (response) {
-                        //将表单的结果页面覆盖模态框Body
-                        _this.extractContent(response);
-                        _this.pageChanged = true;
-                        _this.opts.submitSuccess.call(_this);
-                    }
-                });
-                return false;
+        this.modalBody.on('submit','form',function(e){
+            var _form = $(e.target);
+            e.preventDefault();
+            _form.ajaxSubmit({
+                headers:headers,
+                beforeSubmit:function(){
+                    _this.opts.beforeSubmit.call(_this);
+                },
+                complete:function (xhr) {
+                    _this.processRedirect(xhr,true,false);
+                    _this.opts.submitComplete.call(_this);
+                },
+                success: function (response) {
+                    //将表单的结果页面覆盖模态框Body
+                    _this.extractContent(response);
+                    _this.pageChanged = true;
+                    _this.opts.submitSuccess.call(_this);
+                }
             });
         });
     };
