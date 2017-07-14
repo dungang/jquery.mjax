@@ -183,34 +183,32 @@
     };
 
     $.fn.mjax = function (options) {
-        var opts = $.extend({}, $.fn.mjax.DEFAULTS, options);
-        return this.each(function () {
+        var doc = $(document);
+        if (doc.data('mjax-bind')) {
+            doc.off('click.mjax');
+        } else {
+            doc.data('mjax-bind',true);
+        }
+        doc.on('click.mjax','.mjax',function(e){
+            e.preventDefault();
+            var opts = $.extend({}, $.fn.mjax.DEFAULTS, options);;
             var _this = $(this);
             //关闭模态框的时候是否刷新当前页面
             var _refresh = _this.data('mjax-refresh');
             if (_refresh != undefined) {
                 opts.refresh = _refresh;
             }
-            if (_this.data('mjax-bind')) {
-                _this.off('click.mjax');
+            var instance = new MjaxModel(_this,opts);
+            opts.beforeOpen.call(instance);
+            if(_this.attr('title')) {
+                instance.modalHeaderTitle.html(_this.attr('title'));
             } else {
-                _this.data('mjax-bind',true);
+                instance.modalHeaderTitle.html(_this.html());
             }
-            _this.on('click.mjax',function(e){
-                var arch = $(this);
-                var instance = new MjaxModel(arch,opts);
-                e.preventDefault();
-                opts.beforeOpen.call(instance);
-                if(_this.attr('title')) {
-                    instance.modalHeaderTitle.html(_this.attr('title'));
-                } else {
-                    instance.modalHeaderTitle.html(_this.html());
-                }
-                instance.mjaxGet(_this.attr('href'), function (response) {
-                    instance.extractContent(response);
-                    opts.beforeShow.call(instance);
-                    instance.show();
-                });
+            instance.mjaxGet(_this.attr('href'), function (response) {
+                instance.extractContent(response);
+                opts.beforeShow.call(instance);
+                instance.show();
             });
         });
     };
