@@ -49,7 +49,8 @@
     {
         this.modalBody.find('.mjax').mjax(this.opts);
         var _this = this;
-        this.modalBody.on('submit','form',function(e){
+        this.modalBody.off('submit.mjax');
+        this.modalBody.on('submit.mjax','form',function(e){
             var _form = $(e.target);
             e.preventDefault();
             _form.ajaxSubmit({
